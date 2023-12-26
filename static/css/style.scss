@@ -55,7 +55,9 @@ button {
 
 img {
     max-width: 100%;
-    height: auto;
+    object-fit: cover;
+    object-position: center;
+    height: 100px;
 }
 
 p {
@@ -339,7 +341,7 @@ h6 {
 
 
 #tableData > tbody > tr > td {
-	padding: 0;
+	padding: 4px;
 	height: 20px;
 }
 

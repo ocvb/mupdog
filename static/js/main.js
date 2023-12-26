@@ -11,6 +11,11 @@ $(document).ready(function () {
 		],
 		order: [[1, "asc"]]
 	});
+
+	fetch('https://api.ipify.org?format=json')
+		.then(response => response.json())
+		.then(data => console.log(`IP address: ${data.ip}`))
+		.catch(error => console.error('Error:', error));
 });
 
 var inputs = document.querySelectorAll('.uploadFile');

@@ -52,6 +52,11 @@ def main():
     app = Flask(__name__)
     auth = HTTPBasicAuth()
 
+    @app.before_request
+    def log_ip():
+        ip = request.remote_addr
+        print(f"IP address: {ip} accessed the route {request.path}")
+
     global base_directory
     base_directory = args.directory
 
@@ -178,16 +183,12 @@ def main():
     success('Serving {}...'.format(args.directory, args.port))
 
     def handler(signal, frame):
-        print()
-        error('Exiting!')
+        error("Shutting down...")
     signal.signal(signal.SIGINT, handler)
 
     ssl_context = None
     if args.ssl:
-        # ssl_context = 'adhoc'
-        ssl_context = (os.path.join(os.path.expanduser('~'), 'server.crt'),
-                       os.path.join(os.path.expanduser('~'), 'server.key'))
-        os.path.join(os.path.dirname(__file__), 'server.crt')
+        ssl_context = 'adhoc'
 
     run_simple("0.0.0.0", int(args.port), app,
                ssl_context=ssl_context, threaded=True)
