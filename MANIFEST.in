@@ -1,3 +1,0 @@
-graft updog/static
-graft updog/templates
-global-exclude *.pyc
