@@ -31,9 +31,12 @@ def parse_arguments():
                              '[Default=.]')
     parser.add_argument('-p', '--port', type=int, default=9090,
                         help='Port to serve [Default=9090]')
-    parser.add_argument('--password', type=str, default='', help='Use a password to access the page. (No username)')
-    parser.add_argument('--ssl', action='store_true', help='Use an encrypted connection')
-    parser.add_argument('--version', action='version', version='%(prog)s v'+VERSION)
+    parser.add_argument('--password', type=str, default='',
+                        help='Use a password to access the page. (No username)')
+    parser.add_argument('--ssl', action='store_true',
+                        help='Use an encrypted connection')
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s v'+VERSION)
 
     args = parser.parse_args()
 
@@ -93,7 +96,12 @@ def main():
                     mimetype = None
 
                 try:
-                    return send_file(requested_path, mimetype=mimetype, as_attachment=send_as_attachment)
+                    if extension in ('.mp4', '.avi', '.mkv'):
+                        # if video file is found, then use conditional flag, to enable video jumping
+                        # you can slide to any part of the  video and then play
+                        return send_file(requested_path, mimetype=mimetype, as_attachment=send_as_attachment, conditional=True)
+                    else:
+                        return send_file(requested_path, mimetype=mimetype, as_attachment=send_as_attachment)
                 except PermissionError:
                     abort(403, 'Read Permission Denied: ' + requested_path)
 
@@ -106,7 +114,8 @@ def main():
         if os.path.exists(requested_path):
             # Read the files
             try:
-                directory_files = process_files(os.scandir(requested_path), base_directory)
+                directory_files = process_files(
+                    os.scandir(requested_path), base_directory)
             except PermissionError:
                 abort(403, 'Read Permission Denied: ' + requested_path)
 
@@ -175,9 +184,11 @@ def main():
 
     ssl_context = None
     if args.ssl:
-        ssl_context = 'adhoc'
+        # ssl_context = 'adhoc'
+        ssl_context = ("server.crt", "server.key")
 
-    run_simple("0.0.0.0", int(args.port), app, ssl_context=ssl_context)
+    run_simple("0.0.0.0", int(args.port), app,
+               ssl_context=ssl_context, threaded=True)
 
 
 if __name__ == '__main__':
